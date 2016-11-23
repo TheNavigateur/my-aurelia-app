@@ -134,7 +134,8 @@ export class App {
     camera.position.z = sizePx * 4;
     scene.add(camera);
     controls.noZoom = true;
-    controls.setStartDrag(0, -0.0435);
+    controls.rotateSpeed = 2.4;
+    controls.setStartDrag(0, -0.022);
 
     interactiveFacsCSS3DObject.position.z = cubeEdgeLengthPx/2;
     group.add(interactiveFacsCSS3DObject);
