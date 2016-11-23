@@ -1,0 +1,13 @@
+<template>
+  <div style="font-family:'Roboto Thin';display:flex;flex-direction:column;align-items:center;width:400px;height:400px">
+    <div style="color:white;font-size:24px;margin:16px;text-align:center">What do you want to know about?</div>
+    <select value.bind="selectedIndex" style="width:200px;height:50px;font-size:22px">
+      <option repeat.for="article of articles" value.bind="$index">${article.title}</option>
+    </select>
+    <div repeat.for="article of articles" if.bind="selectedIndex==$index" style="overflow:auto;margin-top:25px;flex:1 1;">
+      <div style="color:white;font-size:25px;margin-left:25px;margin-right:25px;margin-bottom:25px">
+        ${article.description}
+      </div>
+    </div>
+  </div>
+</template>
