@@ -75,7 +75,7 @@ define('app',["require", "exports"], function (require, exports) {
                     opacity: 1,
                     blending: THREE.NoBlending
                 });
-            }), mesh = new THREE.Mesh(boxGeometry, new THREE.MeshFaceMaterial(materials)), divEdgeLengthPx = cubeEdgeLengthPx, interactiveFace = this.interactiveFace, interactiveFacsCSS3DObject = new THREE.CSS3DObject(interactiveFace), group = new THREE.Group(), pointLightConfigs = [
+            }), mesh = new THREE.Mesh(boxGeometry, new THREE.MeshFaceMaterial(materials)), divEdgeLengthPx = cubeEdgeLengthPx, interactiveFace = this.interactiveFace, interactiveFaceCSS3DObject = new THREE.CSS3DObject(interactiveFace), group = new THREE.Group(), pointLightConfigs = [
                 {
                     offsetFromCamera: {
                         x: 0,
@@ -101,9 +101,9 @@ define('app',["require", "exports"], function (require, exports) {
             scene.add(camera);
             controls.noZoom = true;
             controls.rotateSpeed = 2.4;
-            controls.setStartDrag(0, -0.022);
-            interactiveFacsCSS3DObject.position.z = cubeEdgeLengthPx / 2;
-            group.add(interactiveFacsCSS3DObject);
+            controls.setStartDrag(0, -0.02188);
+            interactiveFaceCSS3DObject.position.z = cubeEdgeLengthPx / 2;
+            group.add(interactiveFaceCSS3DObject);
             mesh.add(group);
             scene.add(mesh);
             this.addRenderers(sizePx, renderer, cssRenderer);

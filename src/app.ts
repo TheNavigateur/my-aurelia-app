@@ -101,7 +101,7 @@ export class App {
       mesh = new THREE.Mesh(boxGeometry, new THREE.MeshFaceMaterial(materials)),
       divEdgeLengthPx = cubeEdgeLengthPx,
       interactiveFace = this.interactiveFace,
-      interactiveFacsCSS3DObject = new THREE.CSS3DObject(interactiveFace),
+      interactiveFaceCSS3DObject = new THREE.CSS3DObject(interactiveFace),
       group = new THREE.Group(),
       pointLightConfigs = [
         {
@@ -135,10 +135,10 @@ export class App {
     scene.add(camera);
     controls.noZoom = true;
     controls.rotateSpeed = 2.4;
-    controls.setStartDrag(0, -0.022);
+    controls.setStartDrag(0, -0.02188);
 
-    interactiveFacsCSS3DObject.position.z = cubeEdgeLengthPx/2;
-    group.add(interactiveFacsCSS3DObject);
+    interactiveFaceCSS3DObject.position.z = cubeEdgeLengthPx/2;
+    group.add(interactiveFaceCSS3DObject);
     mesh.add(group);
     scene.add(mesh);
 
