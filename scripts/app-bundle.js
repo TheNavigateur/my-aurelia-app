@@ -177,6 +177,11 @@ define('interactive-face',["require", "exports"], function (require, exports) {
                 }
             ];
         }
+        InteractiveFace.prototype.attached = function () {
+            if (navigator.appVersion.indexOf("Chrome/") != -1) {
+                this.articlesDiv.style.transform = 'scale(' + (2 / 3) + ')';
+            }
+        };
         return InteractiveFace;
     }());
     exports.InteractiveFace = InteractiveFace;
@@ -212,6 +217,7 @@ define('resources/index',["require", "exports"], function (require, exports) {
     exports.configure = configure;
 });
 
-define('text!app.html', ['module'], function(module) { module.exports = "<template>\n  <require from=\"./interactive-face\"></require>\n  <interactive-face ref=\"interactiveFace\"></interactive-face>\n  <div id=\"cubePanel\" style=\"position:relative\"/>\n</template>\n"; });
-define('text!interactive-face.html', ['module'], function(module) { module.exports = "<template>\n  <div style=\"font-family:'Roboto Thin';display:flex;flex-direction:column;align-items:center;width:400px;height:400px\">\n    <div style=\"color:white;font-size:24px;margin:16px;text-align:center\">What do you want to know about?</div>\n    <select value.bind=\"selectedIndex\" style=\"width:200px;height:50px;font-size:22px\">\n      <option repeat.for=\"article of articles\" value.bind=\"$index\">${article.title}</option>\n    </select>\n    <div repeat.for=\"article of articles\" if.bind=\"selectedIndex==$index\" style=\"overflow:auto;margin-top:25px;flex:1 1;\">\n      <div style=\"color:white;font-size:25px;margin-left:25px;margin-right:25px;margin-bottom:25px\">\n        ${article.description}\n      </div>\n    </div>\n  </div>\n</template>\n"; });
+define('text!app.html', ['module'], function(module) { module.exports = "<template>\n  <require from=\"./app.css\"></require>\n  <require from=\"./interactive-face\"></require>\n  <interactive-face ref=\"interactiveFace\"></interactive-face>\n  <div id=\"cubePanel\" style=\"position:relative\"/>\n</template>\n"; });
+define('text!app.css', ['module'], function(module) { module.exports = "@font-face {\n  font-family: 'Roboto Thin';\n  src: url('../Roboto-Thin.ttf');\n}\n"; });
+define('text!interactive-face.html', ['module'], function(module) { module.exports = "<template>\n  <div ref=\"articlesDiv\" style=\"font-family:'Roboto Thin';-moz-user-select:none;color:white;display:flex;flex-direction:column;align-items:center;width:600px;height:600px\">\n    <div style=\"font-size:36px;margin:24px;text-align:center\">What do you want to know about?</div>\n    <select value.bind=\"selectedIndex\" style=\"width:300px;height:75px;font-size:33px\">\n      <option repeat.for=\"article of articles\" value.bind=\"$index\">${article.title}</option>\n    </select>\n    <div repeat.for=\"article of articles\" if.bind=\"selectedIndex==$index\" style=\"overflow:auto;margin-top:37.5px;flex:1 1;\">\n      <div style=\"color:white;font-size:37.5px;margin-left:37.5px;margin-right:37.5px;margin-bottom:37.5px\">\n        ${article.description}\n      </div>\n    </div>\n  </div>\n</template>\n"; });
 //# sourceMappingURL=app-bundle.js.map
