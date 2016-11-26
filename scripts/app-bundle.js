@@ -7,71 +7,44 @@ define('app',["require", "exports"], function (require, exports) {
             var sizePx = 600, renderer = new THREE.WebGLRenderer({
                 alpha: true,
                 antiAlias: true
-            }), cssRenderer = new THREE.CSS3DRenderer(), scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(25, sizePx / sizePx, 1, 10000), controls = new THREE.TrackballControls(camera), renderScene = this.renderScene, cubeEdgeLengthPx = sizePx * 1, boxGeometry = new THREE.BoxGeometry(cubeEdgeLengthPx, cubeEdgeLengthPx, cubeEdgeLengthPx), bumpMapsConfigs = [
-                {
-                    imagePath: "textured-glass-bump-map.jpg"
-                },
-                {
-                    imagePath: "7063-bump.jpg"
-                },
-                {
-                    imagePath: "leather-bump-map.jpg"
-                },
-                {
-                    imagePath: "bumpmap.gif"
-                },
-                {
-                    imagePath: "ivybump.jpg"
-                },
-                {
-                    imagePath: "volcano_rocks_bump1.jpg"
-                }
-            ], bumpMaps = bumpMapsConfigs.map(function (bumpMapConfig) {
-                var bumpMap = new THREE.TextureLoader().load(bumpMapConfig.imagePath);
-                bumpMap.anisotropy = 4;
-                bumpMap.repeat.set(0.998, 0.998);
-                bumpMap.offset.set(0.001, 0.001);
-                bumpMap.wrapS = bumpMap.wrapT = THREE.RepeatWrapping;
-                bumpMap.format = THREE.RGBFormat;
-                return bumpMap;
-            }), ambientLight = new THREE.AmbientLight(0x999999), materialConfigs = [
+            }), cssRenderer = new THREE.CSS3DRenderer(), scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(25, sizePx / sizePx, 1, 10000), controls = new THREE.TrackballControls(camera), renderScene = this.renderScene, cubeEdgeLengthPx = sizePx * 1, boxGeometry = new THREE.BoxGeometry(cubeEdgeLengthPx, cubeEdgeLengthPx, cubeEdgeLengthPx), ambientLight = new THREE.AmbientLight(0x999999), materialConfigs = [
                 {
                     color: 0x6662911,
-                    bumpScale: 10,
-                    bumpMapIndex: 5
+                    normapMapScale: 0.13,
+                    normalMapImagePath: "wavenormalmap.jpg"
                 },
                 {
                     color: 0x552800,
-                    bumpScale: 1.5,
-                    bumpMapIndex: 0
+                    normapMapScale: 0.05,
+                    normalMapImagePath: "rocknormalmap.jpg"
                 },
                 {
                     color: 0x550011,
-                    bumpScale: 4,
-                    bumpMapIndex: 2
+                    normapMapScale: 1.8,
+                    normalMapImagePath: "pebblesnormalmap.png"
                 },
                 {
                     color: 0x112211,
-                    bumpScale: 4,
-                    bumpMapIndex: 3
+                    normapMapScale: 1.4,
+                    normalMapImagePath: "cushionnormalmap.png"
                 },
                 {
                     color: 0x080008,
-                    bumpScale: 4,
-                    bumpMapIndex: 1
+                    normapMapScale: 0.6,
+                    normalMapImagePath: "bricksnormalmap.png"
                 },
                 {
                     color: 0x113300,
-                    bumpScale: 19,
-                    bumpMapIndex: 4
+                    normapMapScale: 0.9,
+                    normalMapImagePath: "golfballnormalmap.jpg"
                 }
             ], materials = materialConfigs.map(function (materialConfig) {
                 return new THREE.MeshPhongMaterial({
                     color: materialConfig.color,
                     specular: 0x222222,
                     shininess: 25,
-                    bumpMap: bumpMaps[materialConfig.bumpMapIndex],
-                    bumpScale: materialConfig.bumpScale,
+                    normalMap: new THREE.TextureLoader().load(materialConfig.normalMapImagePath),
+                    normalScale: new THREE.Vector2(materialConfig.normapMapScale, materialConfig.normapMapScale),
                     opacity: 1,
                     blending: THREE.NoBlending
                 });
