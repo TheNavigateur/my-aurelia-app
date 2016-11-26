@@ -9,40 +9,46 @@ define('app',["require", "exports"], function (require, exports) {
                 antiAlias: true
             }), cssRenderer = new THREE.CSS3DRenderer(), scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(25, sizePx / sizePx, 1, 10000), controls = new THREE.TrackballControls(camera), renderScene = this.renderScene, cubeEdgeLengthPx = sizePx * 1, boxGeometry = new THREE.BoxGeometry(cubeEdgeLengthPx, cubeEdgeLengthPx, cubeEdgeLengthPx), ambientLight = new THREE.AmbientLight(0x999999), materialConfigs = [
                 {
-                    color: 0x6662911,
-                    normapMapScale: 0.13,
-                    normalMapImagePath: "wavenormalmap.jpg"
-                },
-                {
-                    color: 0x552800,
-                    normapMapScale: 0.05,
-                    normalMapImagePath: "rocknormalmap.jpg"
-                },
-                {
-                    color: 0x550011,
-                    normapMapScale: 1.8,
-                    normalMapImagePath: "pebblesnormalmap.png"
+                    color: 0x4830A0,
+                    normapMapScale: 2.3,
+                    normalMapImagePath: "rockpile.jpg",
+                    shininess: 1200
                 },
                 {
                     color: 0x112211,
-                    normapMapScale: 1.4,
-                    normalMapImagePath: "cushionnormalmap.png"
+                    normapMapScale: 1.7,
+                    normalMapImagePath: "cushionnormalmap.png",
+                    shininess: 25
+                },
+                {
+                    color: 0x6662911,
+                    normapMapScale: 0.06,
+                    normalMapImagePath: "wavenormalmap.jpg",
+                    shininess: 100
+                },
+                {
+                    color: 0x552800,
+                    normapMapScale: 0.16,
+                    normalMapImagePath: "rocknormalmap.jpg",
+                    shininess: 15
                 },
                 {
                     color: 0x080008,
                     normapMapScale: 0.6,
-                    normalMapImagePath: "bricksnormalmap.png"
+                    normalMapImagePath: "bricksnormalmap.png",
+                    shininess: 40
                 },
                 {
-                    color: 0x113300,
-                    normapMapScale: 0.9,
-                    normalMapImagePath: "golfballnormalmap.jpg"
+                    color: 0x550011,
+                    normapMapScale: 2.8,
+                    normalMapImagePath: "pebblesnormalmap.png",
+                    shininess: 20
                 }
             ], materials = materialConfigs.map(function (materialConfig) {
                 return new THREE.MeshPhongMaterial({
                     color: materialConfig.color,
                     specular: 0x222222,
-                    shininess: 25,
+                    shininess: materialConfig.shininess,
                     normalMap: new THREE.TextureLoader().load(materialConfig.normalMapImagePath),
                     normalScale: new THREE.Vector2(materialConfig.normapMapScale, materialConfig.normapMapScale),
                     opacity: 1,
