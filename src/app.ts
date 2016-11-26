@@ -20,9 +20,9 @@ export class App {
       materialConfigs = [
         {
           color: 0x4830A0,
-          normapMapScale: 2.3,
+          normapMapScale: 1.6,
           normalMapImagePath: "rockpile.jpg",
-          shininess: 1200
+          shininess: 220
         },
         {
           color: 0x112211,
