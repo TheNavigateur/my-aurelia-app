@@ -15,7 +15,8 @@ export class App {
       controls = new THREE.TrackballControls(camera),
       renderScene = this.renderScene,
       cubeEdgeLengthPx = sizePx * 1,
-      boxGeometry = new THREE.BoxGeometry( cubeEdgeLengthPx, cubeEdgeLengthPx, cubeEdgeLengthPx ),
+      numberOfCubeEdgeSubdivisions = 1,
+      boxGeometry = new THREE.BoxGeometry( cubeEdgeLengthPx, cubeEdgeLengthPx, cubeEdgeLengthPx, numberOfCubeEdgeSubdivisions, numberOfCubeEdgeSubdivisions, numberOfCubeEdgeSubdivisions ),
       ambientLight = new THREE.AmbientLight( 0x999999 ),
       materialConfigs = [
         {
@@ -55,23 +56,42 @@ export class App {
           shininess: 20
         }
       ],
+      normalScale = 19,
+      displacementScale = normalScale * 0,
+      displacementBias = -displacementScale * 0.7,
       materials =
         materialConfigs.map(
           (materialConfig)=>
             new THREE.MeshPhongMaterial(
               {
-                color: materialConfig.color,
+                color: 0x888888,
                 specular: 0x222222,
-                shininess: materialConfig.shininess,
-                normalMap: new THREE.TextureLoader().load(materialConfig.normalMapImagePath),
-                normalScale: new THREE.Vector2(materialConfig.normapMapScale, materialConfig.normapMapScale),
+                shininess: 300,
+
+                map: new THREE.TextureLoader().load('pavementimage.png'),
+
+                //normalMap: new THREE.TextureLoader().load(materialConfig.normalMapImagePath),
+                normalMap: new THREE.TextureLoader().load('pavementnormal.png'),
+
+                normalScale: new THREE.Vector2(normalScale, normalScale),
+
+                //aoMap: new THREE.TextureLoader().load("ao.jpg"),
+                //aoMapIntensity: 43,
+
+                displacementMap: new THREE.TextureLoader().load("pavementdisplacement.png"),
+                displacementScale: displacementScale,
+                displacementBias: displacementBias,
+
+                //bumpMap: new THREE.TextureLoader().load("couchdisplacement.png"),
+                //bumpScale: 100,
+
                 opacity: 1,
                 blending: THREE.NoBlending
               }
             )
         )
       ,
-      mesh = new THREE.Mesh(boxGeometry, new THREE.MeshFaceMaterial(materials)),
+      mesh = new THREE.Mesh(boxGeometry, materials[1]), //new THREE.MeshFaceMaterial(materials)),
       divEdgeLengthPx = cubeEdgeLengthPx,
       interactiveFace = this.interactiveFace,
       interactiveFaceCSS3DObject = new THREE.CSS3DObject(interactiveFace),
@@ -102,6 +122,8 @@ export class App {
           }
         )
     ;
+
+    boxGeometry.computeTangents();
 
     scene.add(ambientLight);
     camera.position.z = sizePx * 4;
