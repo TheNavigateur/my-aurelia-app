@@ -1,3 +1,4 @@
+
 export class App {
 
   attached(){
@@ -8,7 +9,7 @@ export class App {
           alpha: true
         }
       ),
-      cssRenderer = new THREE.CSS3DRenderer(),
+      //cssRenderer = new THREE.CSS3DRenderer(),
       scene = new THREE.Scene(),
       camera = new THREE.PerspectiveCamera(25, sizePx/sizePx, 1, 10000),
       controls = new THREE.TrackballControls(camera),
@@ -102,6 +103,20 @@ export class App {
         )
     ;
 
+    var meshLineGeometry = new THREE.Geometry();
+    for( var j = 0; j < Math.PI; j += 2 * Math.PI / 100 ) {
+      var v = new THREE.Vector3( Math.cos( j ), Math.sin( j ), 0 );
+      meshLineGeometry.vertices.push( v );
+    }
+
+    var meshLine = new THREE.MeshLine();
+    meshLine.setGeometry(meshLineGeometry);
+
+    var meshLineMaterial = new THREE.MeshLineMaterial();
+
+    var lineMesh = new THREE.Mesh( meshLine.geometry, meshLineMaterial ); // this syntax could definitely be improved!
+    scene.add( lineMesh );
+
     scene.add(ambientLight);
     camera.position.z = sizePx * 4;
     scene.add(camera);
@@ -114,7 +129,12 @@ export class App {
     mesh.add(group);
     scene.add(mesh);
 
-    this.addRenderers(sizePx, renderer, cssRenderer);
+    this.addRenderers(
+      sizePx,
+      renderer
+      //,
+      //cssRenderer
+    );
 
     interactiveFace.style.width = interactiveFace.style.height = divEdgeLengthPx;
 
@@ -123,7 +143,12 @@ export class App {
       for(const pointLight of pointLights){
         pointLight.position.set(camera.position.x + pointLight.offsetFromCamera.x, camera.position.y + pointLight.offsetFromCamera.y, camera.position.z + pointLight.offsetFromCamera.z);
       }
-      renderScene(scene, camera, renderer, cssRenderer);
+      renderScene(
+        scene,
+        camera,
+        renderer//,
+        //cssRenderer
+      );
       interactiveFace.style.display = camera.position.z>sizePx/2 ? 'inline' : 'none';
       window.requestAnimationFrame(animate);
     }
@@ -141,7 +166,10 @@ export class App {
   }
 
   renderScene(scene, camera, ...renderers){
+    let i = 0;
     for(const renderer of renderers){
+      i++;
+      console.log('ABOUT TO RENDER FROM RENDERER ' + i);
       renderer.render(scene, camera );
     }
   }

@@ -6,7 +6,7 @@ define('app',["require", "exports"], function (require, exports) {
         App.prototype.attached = function () {
             var sizePx = 600, renderer = new THREE.WebGLRenderer({
                 alpha: true
-            }), cssRenderer = new THREE.CSS3DRenderer(), scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(25, sizePx / sizePx, 1, 10000), controls = new THREE.TrackballControls(camera), renderScene = this.renderScene, cubeEdgeLengthPx = sizePx * 1, boxGeometry = new THREE.BoxGeometry(cubeEdgeLengthPx, cubeEdgeLengthPx, cubeEdgeLengthPx), ambientLight = new THREE.AmbientLight(0x999999), materialConfigs = [
+            }), scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(25, sizePx / sizePx, 1, 10000), controls = new THREE.TrackballControls(camera), renderScene = this.renderScene, cubeEdgeLengthPx = sizePx * 1, boxGeometry = new THREE.BoxGeometry(cubeEdgeLengthPx, cubeEdgeLengthPx, cubeEdgeLengthPx), ambientLight = new THREE.AmbientLight(0x999999), materialConfigs = [
                 {
                     color: 0x4830A0,
                     normapMapScale: 1.6,
@@ -74,6 +74,16 @@ define('app',["require", "exports"], function (require, exports) {
                 scene.add(pointLight);
                 return pointLight;
             });
+            var meshLineGeometry = new THREE.Geometry();
+            for (var j = 0; j < Math.PI; j += 2 * Math.PI / 100) {
+                var v = new THREE.Vector3(Math.cos(j), Math.sin(j), 0);
+                meshLineGeometry.vertices.push(v);
+            }
+            var meshLine = new THREE.MeshLine();
+            meshLine.setGeometry(meshLineGeometry);
+            var meshLineMaterial = new THREE.MeshLineMaterial();
+            var lineMesh = new THREE.Mesh(meshLine.geometry, meshLineMaterial);
+            scene.add(lineMesh);
             scene.add(ambientLight);
             camera.position.z = sizePx * 4;
             scene.add(camera);
@@ -84,7 +94,7 @@ define('app',["require", "exports"], function (require, exports) {
             group.add(interactiveFaceCSS3DObject);
             mesh.add(group);
             scene.add(mesh);
-            this.addRenderers(sizePx, renderer, cssRenderer);
+            this.addRenderers(sizePx, renderer);
             interactiveFace.style.width = interactiveFace.style.height = divEdgeLengthPx;
             function animate() {
                 controls.update();
@@ -92,7 +102,7 @@ define('app',["require", "exports"], function (require, exports) {
                     var pointLight = pointLights_1[_i];
                     pointLight.position.set(camera.position.x + pointLight.offsetFromCamera.x, camera.position.y + pointLight.offsetFromCamera.y, camera.position.z + pointLight.offsetFromCamera.z);
                 }
-                renderScene(scene, camera, renderer, cssRenderer);
+                renderScene(scene, camera, renderer);
                 interactiveFace.style.display = camera.position.z > sizePx / 2 ? 'inline' : 'none';
                 window.requestAnimationFrame(animate);
             }
@@ -116,8 +126,11 @@ define('app',["require", "exports"], function (require, exports) {
             for (var _i = 2; _i < arguments.length; _i++) {
                 renderers[_i - 2] = arguments[_i];
             }
+            var i = 0;
             for (var _a = 0, renderers_2 = renderers; _a < renderers_2.length; _a++) {
                 var renderer = renderers_2[_a];
+                i++;
+                console.log('ABOUT TO RENDER FROM RENDERER ' + i);
                 renderer.render(scene, camera);
             }
         };
@@ -188,6 +201,11 @@ define('main',["require", "exports", './environment'], function (require, export
     exports.configure = configure;
 });
 
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
 var THREE;
 (function (THREE) {
     var MeshLine = (function () {
@@ -204,6 +222,7 @@ var THREE;
             this.widthCallback = null;
         }
         MeshLine.prototype.setGeometry = function (g, c) {
+            if (c === void 0) { c = null; }
             this.widthCallback = c;
             this.positions = [];
             this.counters = [];
@@ -378,190 +397,192 @@ var THREE;
         return MeshLine;
     }());
     THREE.MeshLine = MeshLine;
-    function MeshLineMaterial(parameters) {
-        var vertexShaderSource = [
-            'precision highp float;',
-            '',
-            'attribute vec3 position;',
-            'attribute vec3 previous;',
-            'attribute vec3 next;',
-            'attribute float side;',
-            'attribute float width;',
-            'attribute vec2 uv;',
-            'attribute float counters;',
-            '',
-            'uniform mat4 projectionMatrix;',
-            'uniform mat4 modelViewMatrix;',
-            'uniform vec2 resolution;',
-            'uniform float lineWidth;',
-            'uniform vec3 color;',
-            'uniform float opacity;',
-            'uniform float near;',
-            'uniform float far;',
-            'uniform float sizeAttenuation;',
-            '',
-            'varying vec2 vUV;',
-            'varying vec4 vColor;',
-            'varying vec3 vPosition;',
-            'varying float vCounters;',
-            '',
-            'vec2 fix( vec4 i, float aspect ) {',
-            '',
-            '    vec2 res = i.xy / i.w;',
-            '    res.x *= aspect;',
-            '	 vCounters = counters;',
-            '    return res;',
-            '',
-            '}',
-            '',
-            'void main() {',
-            '',
-            '    float aspect = resolution.x / resolution.y;',
-            '	 float pixelWidthRatio = 1. / (resolution.x * projectionMatrix[0][0]);',
-            '',
-            '    vColor = vec4( color, opacity );',
-            '    vUV = uv;',
-            '',
-            '    mat4 m = projectionMatrix * modelViewMatrix;',
-            '    vec4 finalPosition = m * vec4( position, 1.0 );',
-            '    vec4 prevPos = m * vec4( previous, 1.0 );',
-            '    vec4 nextPos = m * vec4( next, 1.0 );',
-            '',
-            '    vec2 currentP = fix( finalPosition, aspect );',
-            '    vec2 prevP = fix( prevPos, aspect );',
-            '    vec2 nextP = fix( nextPos, aspect );',
-            '',
-            '	 float pixelWidth = finalPosition.w * pixelWidthRatio;',
-            '    float w = 1.8 * pixelWidth * lineWidth * width;',
-            '',
-            '    if( sizeAttenuation == 1. ) {',
-            '        w = 1.8 * lineWidth * width;',
-            '    }',
-            '',
-            '    vec2 dir;',
-            '    if( nextP == currentP ) dir = normalize( currentP - prevP );',
-            '    else if( prevP == currentP ) dir = normalize( nextP - currentP );',
-            '    else {',
-            '        vec2 dir1 = normalize( currentP - prevP );',
-            '        vec2 dir2 = normalize( nextP - currentP );',
-            '        dir = normalize( dir1 + dir2 );',
-            '',
-            '        vec2 perp = vec2( -dir1.y, dir1.x );',
-            '        vec2 miter = vec2( -dir.y, dir.x );',
-            '        //w = clamp( w / dot( miter, perp ), 0., 4. * lineWidth * width );',
-            '',
-            '    }',
-            '',
-            '    //vec2 normal = ( cross( vec3( dir, 0. ), vec3( 0., 0., 1. ) ) ).xy;',
-            '    vec2 normal = vec2( -dir.y, dir.x );',
-            '    normal.x /= aspect;',
-            '    normal *= .5 * w;',
-            '',
-            '    vec4 offset = vec4( normal * side, 0.0, 1.0 );',
-            '    finalPosition.xy += offset.xy;',
-            '',
-            '	 vPosition = ( modelViewMatrix * vec4( position, 1. ) ).xyz;',
-            '    gl_Position = finalPosition;',
-            '',
-            '}'];
-        var fragmentShaderSource = [
-            '#extension GL_OES_standard_derivatives : enable',
-            'precision mediump float;',
-            '',
-            'uniform sampler2D map;',
-            'uniform float useMap;',
-            'uniform float useDash;',
-            'uniform vec2 dashArray;',
-            'uniform float visibility;',
-            'uniform float alphaTest;',
-            '',
-            'varying vec2 vUV;',
-            'varying vec4 vColor;',
-            'varying vec3 vPosition;',
-            'varying float vCounters;',
-            '',
-            'void main() {',
-            '',
-            '    vec4 c = vColor;',
-            '	 if( c.a < alphaTest ) discard;',
-            '    if( useMap == 1. ) c *= texture2D( map, vUV );',
-            '	 if( useDash == 1. ){',
-            '	 	 ',
-            '	 }',
-            '    gl_FragColor = c;',
-            '	 gl_FragColor.a *= step(vCounters,visibility);',
-            '}'];
-        function check(v, d) {
-            if (v === undefined)
-                return d;
-            return v;
+    var MeshLineMaterial = (function (_super) {
+        __extends(MeshLineMaterial, _super);
+        function MeshLineMaterial(parameters) {
+            if (parameters === void 0) { parameters = null; }
+            _super.call(this);
+            var vertexShaderSource = [
+                'precision highp float;',
+                '',
+                'attribute vec3 position;',
+                'attribute vec3 previous;',
+                'attribute vec3 next;',
+                'attribute float side;',
+                'attribute float width;',
+                'attribute vec2 uv;',
+                'attribute float counters;',
+                '',
+                'uniform mat4 projectionMatrix;',
+                'uniform mat4 modelViewMatrix;',
+                'uniform vec2 resolution;',
+                'uniform float lineWidth;',
+                'uniform vec3 color;',
+                'uniform float opacity;',
+                'uniform float near;',
+                'uniform float far;',
+                'uniform float sizeAttenuation;',
+                '',
+                'varying vec2 vUV;',
+                'varying vec4 vColor;',
+                'varying vec3 vPosition;',
+                'varying float vCounters;',
+                '',
+                'vec2 fix( vec4 i, float aspect ) {',
+                '',
+                '    vec2 res = i.xy / i.w;',
+                '    res.x *= aspect;',
+                '	 vCounters = counters;',
+                '    return res;',
+                '',
+                '}',
+                '',
+                'void main() {',
+                '',
+                '    float aspect = resolution.x / resolution.y;',
+                '	 float pixelWidthRatio = 1. / (resolution.x * projectionMatrix[0][0]);',
+                '',
+                '    vColor = vec4( color, opacity );',
+                '    vUV = uv;',
+                '',
+                '    mat4 m = projectionMatrix * modelViewMatrix;',
+                '    vec4 finalPosition = m * vec4( position, 1.0 );',
+                '    vec4 prevPos = m * vec4( previous, 1.0 );',
+                '    vec4 nextPos = m * vec4( next, 1.0 );',
+                '',
+                '    vec2 currentP = fix( finalPosition, aspect );',
+                '    vec2 prevP = fix( prevPos, aspect );',
+                '    vec2 nextP = fix( nextPos, aspect );',
+                '',
+                '	 float pixelWidth = finalPosition.w * pixelWidthRatio;',
+                '    float w = 1.8 * pixelWidth * lineWidth * width;',
+                '',
+                '    if( sizeAttenuation == 1. ) {',
+                '        w = 1.8 * lineWidth * width;',
+                '    }',
+                '',
+                '    vec2 dir;',
+                '    if( nextP == currentP ) dir = normalize( currentP - prevP );',
+                '    else if( prevP == currentP ) dir = normalize( nextP - currentP );',
+                '    else {',
+                '        vec2 dir1 = normalize( currentP - prevP );',
+                '        vec2 dir2 = normalize( nextP - currentP );',
+                '        dir = normalize( dir1 + dir2 );',
+                '',
+                '        vec2 perp = vec2( -dir1.y, dir1.x );',
+                '        vec2 miter = vec2( -dir.y, dir.x );',
+                '        //w = clamp( w / dot( miter, perp ), 0., 4. * lineWidth * width );',
+                '',
+                '    }',
+                '',
+                '    //vec2 normal = ( cross( vec3( dir, 0. ), vec3( 0., 0., 1. ) ) ).xy;',
+                '    vec2 normal = vec2( -dir.y, dir.x );',
+                '    normal.x /= aspect;',
+                '    normal *= .5 * w;',
+                '',
+                '    vec4 offset = vec4( normal * side, 0.0, 1.0 );',
+                '    finalPosition.xy += offset.xy;',
+                '',
+                '	 vPosition = ( modelViewMatrix * vec4( position, 1. ) ).xyz;',
+                '    gl_Position = finalPosition;',
+                '',
+                '}'];
+            var fragmentShaderSource = [
+                '#extension GL_OES_standard_derivatives : enable',
+                'precision mediump float;',
+                '',
+                'uniform sampler2D map;',
+                'uniform float useMap;',
+                'uniform float useDash;',
+                'uniform vec2 dashArray;',
+                'uniform float visibility;',
+                'uniform float alphaTest;',
+                '',
+                'varying vec2 vUV;',
+                'varying vec4 vColor;',
+                'varying vec3 vPosition;',
+                'varying float vCounters;',
+                '',
+                'void main() {',
+                '',
+                '    vec4 c = vColor;',
+                '	 if( c.a < alphaTest ) discard;',
+                '    if( useMap == 1. ) c *= texture2D( map, vUV );',
+                '	 if( useDash == 1. ){',
+                '	 	 ',
+                '	 }',
+                '    gl_FragColor = c;',
+                '	 gl_FragColor.a *= step(vCounters,visibility);',
+                '}'];
+            function check(v, d) {
+                if (v === undefined)
+                    return d;
+                return v;
+            }
+            parameters = parameters || {};
+            this.lineWidth = check(parameters.lineWidth, 1);
+            this.map = check(parameters.map, null);
+            this.useMap = check(parameters.useMap, 0);
+            this.color = check(parameters.color, new THREE.Color(0xffffff));
+            this.opacity = check(parameters.opacity, 1);
+            this.resolution = check(parameters.resolution, new THREE.Vector2(1, 1));
+            this.sizeAttenuation = check(parameters.sizeAttenuation, 1);
+            this.near = check(parameters.near, 1);
+            this.far = check(parameters.far, 1);
+            this.dashArray = check(parameters.dashArray, []);
+            this.useDash = (this.dashArray !== []) ? 1 : 0;
+            this.visibility = check(parameters.visibility, 1);
+            this.alphaTest = check(parameters.alphaTest, 0);
+            var material = new THREE.RawShaderMaterial({
+                uniforms: {
+                    lineWidth: { type: 'f', value: this.lineWidth },
+                    map: { type: 't', value: this.map },
+                    useMap: { type: 'f', value: this.useMap },
+                    color: { type: 'c', value: this.color },
+                    opacity: { type: 'f', value: this.opacity },
+                    resolution: { type: 'v2', value: this.resolution },
+                    sizeAttenuation: { type: 'f', value: this.sizeAttenuation },
+                    near: { type: 'f', value: this.near },
+                    far: { type: 'f', value: this.far },
+                    dashArray: { type: 'v2', value: new THREE.Vector2(this.dashArray[0], this.dashArray[1]) },
+                    useDash: { type: 'f', value: this.useDash },
+                    visibility: { type: 'f', value: this.visibility },
+                    alphaTest: { type: 'f', value: this.alphaTest }
+                },
+                vertexShader: vertexShaderSource.join('\r\n'),
+                fragmentShader: fragmentShaderSource.join('\r\n')
+            });
+            delete parameters.lineWidth;
+            delete parameters.map;
+            delete parameters.useMap;
+            delete parameters.color;
+            delete parameters.opacity;
+            delete parameters.resolution;
+            delete parameters.sizeAttenuation;
+            delete parameters.near;
+            delete parameters.far;
+            delete parameters.dashArray;
+            delete parameters.visibility;
+            delete parameters.alphaTest;
+            material.type = 'MeshLineMaterial';
+            material.setValues(parameters);
         }
-        THREE.Material.call(this);
-        parameters = parameters || {};
-        this.lineWidth = check(parameters.lineWidth, 1);
-        this.map = check(parameters.map, null);
-        this.useMap = check(parameters.useMap, 0);
-        this.color = check(parameters.color, new THREE.Color(0xffffff));
-        this.opacity = check(parameters.opacity, 1);
-        this.resolution = check(parameters.resolution, new THREE.Vector2(1, 1));
-        this.sizeAttenuation = check(parameters.sizeAttenuation, 1);
-        this.near = check(parameters.near, 1);
-        this.far = check(parameters.far, 1);
-        this.dashArray = check(parameters.dashArray, []);
-        this.useDash = (this.dashArray !== []) ? 1 : 0;
-        this.visibility = check(parameters.visibility, 1);
-        this.alphaTest = check(parameters.alphaTest, 0);
-        var material = new THREE.RawShaderMaterial({
-            uniforms: {
-                lineWidth: { type: 'f', value: this.lineWidth },
-                map: { type: 't', value: this.map },
-                useMap: { type: 'f', value: this.useMap },
-                color: { type: 'c', value: this.color },
-                opacity: { type: 'f', value: this.opacity },
-                resolution: { type: 'v2', value: this.resolution },
-                sizeAttenuation: { type: 'f', value: this.sizeAttenuation },
-                near: { type: 'f', value: this.near },
-                far: { type: 'f', value: this.far },
-                dashArray: { type: 'v2', value: new THREE.Vector2(this.dashArray[0], this.dashArray[1]) },
-                useDash: { type: 'f', value: this.useDash },
-                visibility: { type: 'f', value: this.visibility },
-                alphaTest: { type: 'f', value: this.alphaTest }
-            },
-            vertexShader: vertexShaderSource.join('\r\n'),
-            fragmentShader: fragmentShaderSource.join('\r\n')
-        });
-        delete parameters.lineWidth;
-        delete parameters.map;
-        delete parameters.useMap;
-        delete parameters.color;
-        delete parameters.opacity;
-        delete parameters.resolution;
-        delete parameters.sizeAttenuation;
-        delete parameters.near;
-        delete parameters.far;
-        delete parameters.dashArray;
-        delete parameters.visibility;
-        delete parameters.alphaTest;
-        material.type = 'MeshLineMaterial';
-        material.setValues(parameters);
-        return material;
-    }
-    ;
-    MeshLineMaterial.prototype = Object.create(THREE.Material.prototype);
-    MeshLineMaterial.prototype.constructor = MeshLineMaterial;
-    MeshLineMaterial.prototype.copy = function (source) {
-        THREE.Material.prototype.copy.call(this, source);
-        this.lineWidth = source.lineWidth;
-        this.map = source.map;
-        this.useMap = source.useMap;
-        this.color.copy(source.color);
-        this.opacity = source.opacity;
-        this.resolution.copy(source.resolution);
-        this.sizeAttenuation = source.sizeAttenuation;
-        this.near = source.near;
-        this.far = source.far;
-        return this;
-    };
+        MeshLineMaterial.prototype.copy = function (source) {
+            _super.prototype.copy.call(this, source);
+            this.lineWidth = source.lineWidth;
+            this.map = source.map;
+            this.useMap = source.useMap;
+            this.color.copy(source.color);
+            this.opacity = source.opacity;
+            this.resolution.copy(source.resolution);
+            this.sizeAttenuation = source.sizeAttenuation;
+            this.near = source.near;
+            this.far = source.far;
+            return this;
+        };
+        return MeshLineMaterial;
+    }(THREE.Material));
+    THREE.MeshLineMaterial = MeshLineMaterial;
 })(THREE || (THREE = {}));
 
 define("meshline", [],function(){});

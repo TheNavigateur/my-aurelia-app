@@ -16188,6 +16188,8 @@
     	var vertexShader = material.__webglShader.vertexShader;
     	var fragmentShader = material.__webglShader.fragmentShader;
 
+    	console.log("VERTEX SHADER IS " + vertexShader + ", FRAGMENT SHADER IS " + fragmentShader);
+
     	var shadowMapTypeDefine = 'SHADOWMAP_TYPE_BASIC';
 
     	if ( parameters.shadowMapType === PCFShadowMap ) {
