@@ -5,8 +5,7 @@ define('app',["require", "exports"], function (require, exports) {
         }
         App.prototype.attached = function () {
             var sizePx = 600, renderer = new THREE.WebGLRenderer({
-                alpha: true,
-                antiAlias: true
+                alpha: true
             }), cssRenderer = new THREE.CSS3DRenderer(), scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(25, sizePx / sizePx, 1, 10000), controls = new THREE.TrackballControls(camera), renderScene = this.renderScene, cubeEdgeLengthPx = sizePx * 1, boxGeometry = new THREE.BoxGeometry(cubeEdgeLengthPx, cubeEdgeLengthPx, cubeEdgeLengthPx), ambientLight = new THREE.AmbientLight(0x999999), materialConfigs = [
                 {
                     color: 0x4830A0,
@@ -196,7 +195,7 @@ define('resources/index',["require", "exports"], function (require, exports) {
     exports.configure = configure;
 });
 
-define('text!app.css', ['module'], function(module) { module.exports = "@font-face {\n  font-family: 'Roboto Thin';\n  src: url('../Roboto-Thin.ttf');\n}\n"; });
 define('text!app.html', ['module'], function(module) { module.exports = "<template>\n  <require from=\"./app.css\"></require>\n  <require from=\"./interactive-face\"></require>\n  <interactive-face ref=\"interactiveFace\"></interactive-face>\n  <div id=\"cubePanel\" style=\"position:relative\"/>\n</template>\n"; });
+define('text!app.css', ['module'], function(module) { module.exports = "@font-face {\n  font-family: 'Roboto Thin';\n  src: url('../Roboto-Thin.ttf');\n}\n"; });
 define('text!interactive-face.html', ['module'], function(module) { module.exports = "<template>\n  <div ref=\"articlesDiv\" style=\"font-family:'Roboto Thin';-moz-user-select:none;color:white;display:flex;flex-direction:column;align-items:center;width:600px;height:600px\">\n    <div style=\"font-size:36px;margin:24px;text-align:center\">What do you want to know about?</div>\n    <select value.bind=\"selectedIndex\" style=\"width:300px;height:75px;font-size:33px\">\n      <option repeat.for=\"article of articles\" value.bind=\"$index\">${article.title}</option>\n    </select>\n    <div repeat.for=\"article of articles\" if.bind=\"selectedIndex==$index\" style=\"overflow:auto;margin-top:37.5px;flex:1 1;\">\n      <div style=\"color:white;font-size:37.5px;margin-left:37.5px;margin-right:37.5px;margin-bottom:37.5px\">\n        ${article.description}\n      </div>\n    </div>\n  </div>\n</template>\n"; });
 //# sourceMappingURL=app-bundle.js.map

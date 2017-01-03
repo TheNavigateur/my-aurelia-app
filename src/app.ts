@@ -5,8 +5,7 @@ export class App {
       sizePx = 600,
       renderer = new THREE.WebGLRenderer(
         {
-          alpha: true,
-          antiAlias: true
+          alpha: true
         }
       ),
       cssRenderer = new THREE.CSS3DRenderer(),
