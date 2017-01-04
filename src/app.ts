@@ -9,7 +9,7 @@ export class App {
           alpha: true
         }
       ),
-      //cssRenderer = new THREE.CSS3DRenderer(),
+      cssRenderer = new THREE.CSS3DRenderer(),
       scene = new THREE.Scene(),
       camera = new THREE.PerspectiveCamera(25, sizePx/sizePx, 1, 10000),
       controls = new THREE.TrackballControls(camera),
@@ -105,14 +105,14 @@ export class App {
 
     var meshLineGeometry = new THREE.Geometry();
     for( var j = 0; j < Math.PI; j += 2 * Math.PI / 100 ) {
-      var v = new THREE.Vector3( Math.cos( j ), Math.sin( j ), 0 );
+      var v = new THREE.Vector3( 600 * Math.cos( j ), 600 * Math.sin( j ), 0 );
       meshLineGeometry.vertices.push( v );
     }
 
     var meshLine = new THREE.MeshLine();
     meshLine.setGeometry(meshLineGeometry);
 
-    var meshLineMaterial = new THREE.MeshLineMaterial();
+    var meshLineMaterial = new THREE.MeshLineMaterial( { color: new THREE.Color(0xff00ff) } );
 
     var lineMesh = new THREE.Mesh( meshLine.geometry, meshLineMaterial ); // this syntax could definitely be improved!
     scene.add( lineMesh );
@@ -131,9 +131,8 @@ export class App {
 
     this.addRenderers(
       sizePx,
-      renderer
-      //,
-      //cssRenderer
+      renderer,
+      cssRenderer
     );
 
     interactiveFace.style.width = interactiveFace.style.height = divEdgeLengthPx;
@@ -146,8 +145,8 @@ export class App {
       renderScene(
         scene,
         camera,
-        renderer//,
-        //cssRenderer
+        renderer,
+        cssRenderer
       );
       interactiveFace.style.display = camera.position.z>sizePx/2 ? 'inline' : 'none';
       window.requestAnimationFrame(animate);

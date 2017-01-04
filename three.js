@@ -21071,30 +21071,51 @@
 
     		}
 
+    		if(material.type=="MeshLineMaterial"){
+          console.log("MESH LINE MATERIAL NEEDS UPDATE BEFORE CHECKS? " + material.needsUpdate);
+        }
+
     		if ( material.needsUpdate === false ) {
 
     			if ( materialProperties.program === undefined ) {
 
     				material.needsUpdate = true;
 
+            if(material.type=="MeshLineMaterial"){
+              console.log("MESH LINE MATERIAL NEEDS UPDATE 1");
+            }
+
     			} else if ( material.fog && materialProperties.fog !== fog ) {
 
     				material.needsUpdate = true;
-
+            if(material.type=="MeshLineMaterial"){
+              console.log("MESH LINE MATERIAL NEEDS UPDATE 2");
+            }
     			} else if ( material.lights && materialProperties.lightsHash !== _lights.hash ) {
 
     				material.needsUpdate = true;
+            if(material.type=="MeshLineMaterial"){
+              console.log("MESH LINE MATERIAL NEEDS UPDATE 3");
+            }
 
     			} else if ( materialProperties.numClippingPlanes !== undefined &&
     				materialProperties.numClippingPlanes !== _clipping.numPlanes ) {
 
     				material.needsUpdate = true;
-
+            if(material.type=="MeshLineMaterial"){
+              console.log("MESH LINE MATERIAL NEEDS UPDATE 4");
+            }
     			}
 
     		}
 
+        if(material.type=="MeshLineMaterial"){
+          console.log("MESH LINE MATERIAL NEEDS UPDATE AFTER CHECKS? " + material.needsUpdate);
+        }
+
     		if ( material.needsUpdate ) {
+
+          console.log("MATERIAL " + material.type + " NEEDS UPDATE!");
 
     			initMaterial( material, fog, object );
     			material.needsUpdate = false;
