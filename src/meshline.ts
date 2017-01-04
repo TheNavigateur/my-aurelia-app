@@ -346,12 +346,12 @@ namespace THREE{
   }
 
   export class MeshLineMaterialParameters {
-    lineWidth;
+    lineWidth : number;
     map;
     useMap;
-    color;
-    opacity;
-    resolution;
+    color : THREE.Color;
+    opacity : number;
+    resolution : THREE.Vector2;
     sizeAttenuation;
     near;
     far;
@@ -362,106 +362,34 @@ namespace THREE{
   }
 
 	export class MeshLineMaterial extends THREE.RawShaderMaterial{
-    lineWidth;
-    map;
-    useMap;
-    color;
-    opacity;
-    resolution;
-    sizeAttenuation;
-    near;
-    far;
-    dashArray;
-    useDash;
-    visibility;
-    alphaTest;
-    constructor( parameters:MeshLineMaterialParameters = {} ) {
+    constructor( parameters:MeshLineMaterialParameters = new MeshLineMaterialParameters() ) {
       const
-        lineWidth = check(parameters.lineWidth, 1),
-        map = check(parameters.map, null),
-        useMap = check(parameters.useMap, 0),
-        color = check(parameters.color, new THREE.Color(0xffffff)),
-        opacity = check(parameters.opacity, 1),
-        resolution = check(parameters.resolution, new THREE.Vector2(1, 1)),
-        sizeAttenuation = check(parameters.sizeAttenuation, 1),
-        near = check(parameters.near, 1),
-        far = check(parameters.far, 1),
         dashArray = check(parameters.dashArray, []),
-        useDash = ( dashArray !== [] ) ? 1 : 0,
-        visibility = check(parameters.visibility, 1),
-        alphaTest = check(parameters.alphaTest, 0)
+        useDash = ( dashArray !== [] ) ? 1 : 0
       ;
       super(
         {
           uniforms: {
-            lineWidth: {type: 'f', value: lineWidth},
-            map: {type: 't', value: map},
-            useMap: {type: 'f', value: useMap},
-            color: {type: 'c', value: color},
-            opacity: {type: 'f', value: opacity},
-            resolution: {type: 'v2', value: resolution},
-            sizeAttenuation: {type: 'f', value: sizeAttenuation},
-            near: {type: 'f', value: near},
-            far: {type: 'f', value: far},
+            lineWidth: {type: 'f', value: check(parameters.lineWidth, 1)},
+            map: {type: 't', value: check(parameters.map, null)},
+            useMap: {type: 'f', value: check(parameters.useMap, 0)},
+            color: {type: 'c', value: check(parameters.color, new THREE.Color(0xffffff))},
+            opacity: {type: 'f', value: check(parameters.opacity, 1)},
+            resolution: {type: 'v2', value: check(parameters.resolution, new THREE.Vector2(1, 1))},
+            sizeAttenuation: {type: 'f', value: check(parameters.sizeAttenuation, 1)},
+            near: {type: 'f', value: check(parameters.near, 1)},
+            far: {type: 'f', value: check(parameters.far, 1)},
             dashArray: {type: 'v2', value: new THREE.Vector2(dashArray[0], dashArray[1])},
             useDash: {type: 'f', value: useDash},
-            visibility: {type: 'f', value: visibility},
-            alphaTest: {type: 'f', value: alphaTest}
+            visibility: {type: 'f', value: check(parameters.visibility, 1)},
+            alphaTest: {type: 'f', value: check(parameters.alphaTest, 0)}
           },
           vertexShader: vertexShaderSource.join('\r\n'),
           fragmentShader: fragmentShaderSource.join('\r\n')
         }
       );
 
-      /*
-      this.lineWidth = lineWidth;
-      this.map = map;
-      this.useMap = useMap;
-      this.color = color;
-      this.opacity = opacity;
-      this.resolution = resolution;
-      this.sizeAttenuation = sizeAttenuation;
-      this.near = near;
-      this.far = far;
-      this.dashArray = dashArray;
-      this.useDash = useDash;
-      this.visibility = visibility;
-      this.alphaTest = alphaTest;
-      */
-
-      /*
-      delete parameters.lineWidth;
-      delete parameters.map;
-      delete parameters.useMap;
-      delete parameters.color;
-      delete parameters.opacity;
-      delete parameters.resolution;
-      delete parameters.sizeAttenuation;
-      delete parameters.near;
-      delete parameters.far;
-      delete parameters.dashArray;
-      delete parameters.visibility;
-      delete parameters.alphaTest;
-      */
-
       this.type = 'MeshLineMaterial';
-
-      //this.setValues(parameters);
-    }
-
-    copy(source){
-      super.copy(source);
-      this.lineWidth = source.lineWidth;
-      this.map = source.map;
-      this.useMap = source.useMap;
-      this.color.copy( source.color );
-      this.opacity = source.opacity;
-      this.resolution.copy( source.resolution );
-      this.sizeAttenuation = source.sizeAttenuation;
-      this.near = source.near;
-      this.far = source.far;
-
-      return this;
     }
 	}
 }

@@ -523,42 +523,29 @@ var THREE;
     var MeshLineMaterial = (function (_super) {
         __extends(MeshLineMaterial, _super);
         function MeshLineMaterial(parameters) {
-            if (parameters === void 0) { parameters = {}; }
-            var lineWidth = check(parameters.lineWidth, 1), map = check(parameters.map, null), useMap = check(parameters.useMap, 0), color = check(parameters.color, new THREE.Color(0xffffff)), opacity = check(parameters.opacity, 1), resolution = check(parameters.resolution, new THREE.Vector2(1, 1)), sizeAttenuation = check(parameters.sizeAttenuation, 1), near = check(parameters.near, 1), far = check(parameters.far, 1), dashArray = check(parameters.dashArray, []), useDash = (dashArray !== []) ? 1 : 0, visibility = check(parameters.visibility, 1), alphaTest = check(parameters.alphaTest, 0);
+            if (parameters === void 0) { parameters = new MeshLineMaterialParameters(); }
+            var dashArray = check(parameters.dashArray, []), useDash = (dashArray !== []) ? 1 : 0;
             _super.call(this, {
                 uniforms: {
-                    lineWidth: { type: 'f', value: lineWidth },
-                    map: { type: 't', value: map },
-                    useMap: { type: 'f', value: useMap },
-                    color: { type: 'c', value: color },
-                    opacity: { type: 'f', value: opacity },
-                    resolution: { type: 'v2', value: resolution },
-                    sizeAttenuation: { type: 'f', value: sizeAttenuation },
-                    near: { type: 'f', value: near },
-                    far: { type: 'f', value: far },
+                    lineWidth: { type: 'f', value: check(parameters.lineWidth, 1) },
+                    map: { type: 't', value: check(parameters.map, null) },
+                    useMap: { type: 'f', value: check(parameters.useMap, 0) },
+                    color: { type: 'c', value: check(parameters.color, new THREE.Color(0xffffff)) },
+                    opacity: { type: 'f', value: check(parameters.opacity, 1) },
+                    resolution: { type: 'v2', value: check(parameters.resolution, new THREE.Vector2(1, 1)) },
+                    sizeAttenuation: { type: 'f', value: check(parameters.sizeAttenuation, 1) },
+                    near: { type: 'f', value: check(parameters.near, 1) },
+                    far: { type: 'f', value: check(parameters.far, 1) },
                     dashArray: { type: 'v2', value: new THREE.Vector2(dashArray[0], dashArray[1]) },
                     useDash: { type: 'f', value: useDash },
-                    visibility: { type: 'f', value: visibility },
-                    alphaTest: { type: 'f', value: alphaTest }
+                    visibility: { type: 'f', value: check(parameters.visibility, 1) },
+                    alphaTest: { type: 'f', value: check(parameters.alphaTest, 0) }
                 },
                 vertexShader: vertexShaderSource.join('\r\n'),
                 fragmentShader: fragmentShaderSource.join('\r\n')
             });
             this.type = 'MeshLineMaterial';
         }
-        MeshLineMaterial.prototype.copy = function (source) {
-            _super.prototype.copy.call(this, source);
-            this.lineWidth = source.lineWidth;
-            this.map = source.map;
-            this.useMap = source.useMap;
-            this.color.copy(source.color);
-            this.opacity = source.opacity;
-            this.resolution.copy(source.resolution);
-            this.sizeAttenuation = source.sizeAttenuation;
-            this.near = source.near;
-            this.far = source.far;
-            return this;
-        };
         return MeshLineMaterial;
     }(THREE.RawShaderMaterial));
     THREE.MeshLineMaterial = MeshLineMaterial;
