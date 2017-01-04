@@ -110,7 +110,7 @@ export class App {
     }
 
     var meshLine = new THREE.MeshLine();
-    meshLine.setGeometry(meshLineGeometry);
+    meshLine.setGeometry(meshLineGeometry, (p)=>50);
 
     var meshLineMaterial = new THREE.MeshLineMaterial( { color: new THREE.Color(0xff00ff) } );
 

@@ -80,7 +80,7 @@ define('app',["require", "exports"], function (require, exports) {
                 meshLineGeometry.vertices.push(v);
             }
             var meshLine = new THREE.MeshLine();
-            meshLine.setGeometry(meshLineGeometry);
+            meshLine.setGeometry(meshLineGeometry, function (p) { return 50; });
             var meshLineMaterial = new THREE.MeshLineMaterial({ color: new THREE.Color(0xff00ff) });
             var lineMesh = new THREE.Mesh(meshLine.geometry, meshLineMaterial);
             scene.add(lineMesh);
