@@ -22,9 +22,11 @@ export class InteractiveFace{
   ];
 
   //TODO: Remove this as soon as three.js/Chrome issue https://github.com/mrdoob/three.js/issues/10226 is fixed
+  /*
   attached(){
     if (navigator.appVersion.indexOf("Chrome/") != -1) {
       this.articlesDiv.style.transform = 'scale('+(2/3)+')';
     }
   }
+  */
 }
